@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use Illuminate\Http\Request;
+use App\Http\Requests\Category\CreateRequest;
+use App\Http\Requests\Category\UpdateRequest;
+
 
 class CategoriesController extends Controller
 {
@@ -13,7 +17,7 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        return \view('categories.index');
+        return \view('categories.index')->with('categories', Category::all());
     }
 
     /**
@@ -23,7 +27,7 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -32,9 +36,14 @@ class CategoriesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
-        //
+        Category::create([
+            'name'=>$request->name
+        ]);
+
+        session()->flash('success', 'Category has been created.');
+        return \redirect(route('categories.index'));
     }
 
     /**
@@ -54,9 +63,9 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Category $category)
     {
-        //
+        return view('categories.create')->with('category', $category);
     }
 
     /**
@@ -66,9 +75,17 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, Category $category)
     {
-        //
+        // $category->name = $request->name;
+        // $category->save();
+
+        $category->update([
+            'name'=>$request->name
+        ]);
+
+        session()->flash('success', 'Category has been updated.');
+        return \redirect(route('categories.index'));
     }
 
     /**
@@ -77,8 +94,11 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        session()->flash('success', 'Category has been deleted.');
+        return \redirect(route('categories.index'));
     }
 }
